@@ -1,0 +1,43 @@
+/* Вхідні дані */
+nums: [134, 987, 543, 234, 765, 876, 453, 100, 321, 678]$
+alpha: ['A','B','C','D','E','F','G','H','I','J']$
+n: length(alpha)$
+
+/* Сортування та межі */
+sorted: sort(nums)$
+minv: first(sorted)$
+maxv: last(sorted)$
+step: (maxv - minv + 1) / n$
+
+/* Побудова інтервалів */
+intervals: makelist([minv + step*(i - 1), minv + step*i], i, 1, n)$
+
+/* Функція: знайти букву по числу */
+to_letter(x) := block([pos],
+  pos: first(positions(lambda([a], is(x >= a[1] and x < a[2])), intervals)),
+  return(alpha[pos]))$
+
+/* Побудова лінгвістичного ряду */
+letters: map(to_letter, nums)$
+print("Лінгвістичний ряд:", letters);
+
+/* Побудова пар переходів */
+pairs: block([res: []],
+  for i:1 thru length(letters)-1 do
+    res: endcons([letters[i], letters[i+1]], res),
+  return(res))$
+
+/* Матриця передування */
+matrix: makelist(
+  makelist(
+    length(sublist(pairs, lambda([p], p = [alpha[i], alpha[j]]))),
+    j, 1, n),
+  i, 1, n)$
+
+/* Вивід матриці передування */
+print("Матриця передування:");
+for i:1 thru n do (
+  for j:1 thru n do (
+    print(concat(alpha[i], " -> ", alpha[j], ": ", matrix[i][j]))
+  )
+);
